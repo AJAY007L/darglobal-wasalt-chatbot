@@ -48,11 +48,14 @@ public class SiteIngestor implements CommandLineRunner {
                     .timeout(15000).maxBodySize(5_000_000).get();
             page.select("script,style,nav,footer,header,form,noscript,svg").remove();
             String text = page.body() == null ? "" : page.body().text().replaceAll("\\s+", " ").trim();
+            if (text.length() < 80) {
+                throw new IllegalStateException("Refusing to save an empty or challenge response from " + url);
+            }
             if (text.length() > 12000) text = text.substring(0, 12000);
             String publisher = host.contains("darglobal") ? "DarGlobal" : "Wasalt";
             String title = page.title().isBlank() ? url : page.title().trim();
             String id = publisher.toLowerCase(Locale.ROOT) + "-" + Integer.toUnsignedString(url.hashCode(), 36);
-            documents.add(new SourceDocument(id, publisher, title, url, LocalDate.now(), text));
+            documents.add(new SourceDocument(id, publisher, title, url, LocalDate.now(), "jsoup", text));
             Thread.sleep(1200);
         }
         if (documents.isEmpty()) throw new IllegalStateException("No source pages were ingested");

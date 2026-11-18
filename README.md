@@ -12,13 +12,13 @@ Open http://localhost:8080. GET /api/health reports corpus and AI-key status. PO
 
 ## Refresh the public-page snapshot
 
-The optional Jsoup ingestion accepts HTTPS URLs on darglobal.co.uk or wasalt.sa. Use only URLs covered by applicable authorization, and run it where network egress is available:
+The optional Jsoup ingestion accepts HTTPS URLs on darglobal.co.uk or wasalt.sa. Use only URLs covered by applicable authorization, and run it where network egress is available. It rejects empty responses so anti-bot pages cannot be saved as successful records:
 
     INGEST_URLS="https://darglobal.co.uk/projects/villas,https://wasalt.sa/en" \
     INGEST_OUTPUT="src/main/resources/data/catalog.json" \
     mvn spring-boot:run
 
-Stop the process after the ingestion message, then rebuild/restart the application. The initial bundled corpus is a dated snapshot; dynamic property details should be checked on the linked source.
+Stop the process after the ingestion message, then rebuild/restart the application. The bundled corpus records each source URL, capture date, and retrieval method. The Wasalt homepage and Riyadh page were fetched directly with Jsoup. DarGlobal blocked direct requests in this environment, so the two DarGlobal records contain text extracted from publicly indexed official pages; the index crawl can be older than the capture date. Dynamic property details should be checked on the linked source.
 
 ## Docker and Render
 
